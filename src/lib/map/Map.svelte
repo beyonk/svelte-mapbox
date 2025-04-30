@@ -42,6 +42,11 @@
   export let customStylesheetUrl = false
   export let style = 'mapbox://styles/mapbox/streets-v11'
 
+  /**
+   * Allows you to provide the mapbox library, in case it isn't possible to retrieve/access it globally
+   */
+  export let mapboxLib = undefined;
+
   const dispatch = createEventDispatcher()
 
   setContext(contextKey, {
@@ -62,7 +67,8 @@
     wheelZoomRate,
     version,
     customStylesheetUrl,
-    map
+    map,
+    mapboxLib,
   }, options)
 
   const queue = new EventQueue()

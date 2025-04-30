@@ -23,6 +23,11 @@
   export let customStylesheetUrl = false
   export let geocoder
 
+  /**
+   * Allows you to provide the mapbox geocoder, in case it isn't possible to access it globally
+   */
+  export let MapboxGeocoder = undefined
+
   const dispatch = createEventDispatcher()
   const fieldId = 'bsm-' + Math.random().toString(36).substring(6)
 
@@ -32,7 +37,8 @@
     types: types.join(','),
     placeholder,
     customStylesheetUrl,
-    value
+    value,
+    MapboxGeocoder
   }, options)
 
   function init ({ detail }) {
