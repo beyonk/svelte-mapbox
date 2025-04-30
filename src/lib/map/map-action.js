@@ -5,9 +5,12 @@ export default function action (node, options = {}) {
   let map
 
   const resources = [
-    { type: 'script', attr: 'src', value: `//api.mapbox.com/mapbox-gl-js/${options.version}/mapbox-gl.js`, id: 'byk-gl-js' },
     { type: 'link', attr: 'href', value: `//api.mapbox.com/mapbox-gl-js/${options.version}/mapbox-gl.css`, id: 'byk-gl-css' }
   ]
+
+  if (!options.mapboxLib) {
+    resources.push({ type: 'script', attr: 'src', value: `//api.mapbox.com/mapbox-gl-js/${options.version}/mapbox-gl.js`, id: 'byk-gl-js' })
+  }
 
   const customStylesheetUrl = options.customStylesheetUrl
   if (customStylesheetUrl) {
@@ -28,10 +31,11 @@ export default function action (node, options = {}) {
 }
 
 function init (options, node) {
-  window.mapboxgl.accessToken = options.accessToken
-  const el = new window.mapboxgl.Map(options)
+  const mapbox = options.mapboxLib || window.mapboxgl
+  mapbox.accessToken = options.accessToken
+  const el = new mapbox.Map(options)
 
-  return bindEvents(el, handlers, window.mapboxgl, node)
+  return bindEvents(el, handlers, mapbox, node)
 }
 
 const handlers = {

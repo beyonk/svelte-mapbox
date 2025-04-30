@@ -4,9 +4,11 @@ import { bindEvents } from '../event-bindings.js'
 export default function action (node, options = {}) {
   let map
 
-  const resources = [
-    { type: 'script', value: `//api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/${options.version}/mapbox-gl-geocoder.min.js`, id: 'byk-gc-js' }
-  ]
+  const resources = [];
+
+  if (!options.MapboxGeocoder) {
+    resources.push({ type: 'script', value: `//api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/${options.version}/mapbox-gl-geocoder.min.js`, id: 'byk-gc-js' })
+  }
 
   const customStylesheetUrl = options.customStylesheetUrl
   if (customStylesheetUrl) {
@@ -29,7 +31,8 @@ export default function action (node, options = {}) {
 }
 
 function init (options, node) {
-  const geocoder = new window.MapboxGeocoder(options)
+  const MapboxGeocoder = options.MapboxGeocoder || window.MapboxGeocoder
+  const geocoder = new MapboxGeocoder(options)
   geocoder.addTo(`#${node.id}`)
   if (options.value) {
     geocoder.setInput(options.value)
