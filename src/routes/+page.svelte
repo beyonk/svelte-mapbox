@@ -107,7 +107,6 @@
                 bind:value={placeName}
                 accessToken={PUBLIC_MAPBOX_TOKEN}
                 onresult={({ result }) => {
-                  console.log('sets center', result.center)
                   mapComponent.setCenter(result.center, 14)
                   place = result
                 }}

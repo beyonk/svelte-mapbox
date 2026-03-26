@@ -26,7 +26,6 @@ export default function geocoderAttachment (options, { onresults, onresult, onlo
         onresults?.(ev)
       })
       geocoderInstance.on('result', (ev) => {
-        console.log('result', onresult, ev)
         onresult?.(ev)
       })
       geocoderInstance.on('loading', (ev) => {
