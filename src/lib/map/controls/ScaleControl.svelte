@@ -1,19 +1,18 @@
 <script>
-	import { getContext } from 'svelte'
-	import { contextKey } from '../../mapbox.js'
+  import { getContext, untrack } from 'svelte'
+  import { contextKey } from '../../mapbox.js'
 
-	const { getMap, getMapbox } = getContext(contextKey)
-	const map = getMap()
-	const mapbox = getMapbox()
+  const { getMap, getMapbox } = getContext(contextKey)
+  const map = getMap()
+  const mapbox = getMapbox()
 
-	export let position = 'bottom-right'
-	export let options = {}
+  let { position = 'bottom-right', options = {} } = $props()
 
-	const optionsWithDefaults = Object.assign({
-	  maxWidth: 80,
-	  unit: 'metric'
-	}, options)
+  const optionsWithDefaults = untrack(() => Object.assign({
+    maxWidth: 80,
+    unit: 'metric'
+  }, options))
 
-	const scale = new mapbox.ScaleControl(optionsWithDefaults)
-	map.addControl(scale, position)
+  const scale = new mapbox.ScaleControl(optionsWithDefaults)
+  map.addControl(scale, untrack(() => position))
 </script>

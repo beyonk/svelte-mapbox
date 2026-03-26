@@ -1,60 +1,30 @@
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div
-  use:action={optionsWithDefaults}
-  on:ready={init}
-  on:recentre
-  on:dragend
-  on:click
-  on:zoomstart
-  on:zoom
-  on:zoomend
-  on:drag
-  on:keydown
-  on:keyup
-  role="application"
-  >
-  {#if map}
-  <slot></slot>
-  {/if}
-</div>
-
-<style>
-  div {
-    width: 100%;
-    height: 100%;
-  }
-</style>
-
 <script>
-  import { setContext, onDestroy, createEventDispatcher } from 'svelte'
+  import { setContext, untrack } from 'svelte'
   import { contextKey } from '../mapbox.js'
-  import action from './map-action.js'
-  import { EventQueue } from '../queue.js'
+  import mapAttachment from './map-attachment.js'
+  import { EventQueue } from '../queue.svelte.js'
 
-  export let map = null
-  export let version = 'v3.7.0'
-  export let center = [ 0, 0 ]
-  export let zoom = 9
-  export let zoomRate = 1
-  export let wheelZoomRate = 1
-  export let options = {}
-  export let accessToken
-  export let customStylesheetUrl = false
-  export let style = 'mapbox://styles/mapbox/streets-v11'
-
-  const dispatch = createEventDispatcher()
-
-  setContext(contextKey, {
-    getMap: () => map,
-    getMapbox: () => mapbox
-  })
-
-  let container
-  let mapbox
-
-  const optionsWithDefaults = Object.assign({
+  let {
+    map = $bindable(null),
+    version = 'v3.20.0',
+    center = [ 0, 0 ],
+    zoom = $bindable(9),
+    zoomRate = 1,
+    wheelZoomRate = 1,
+    options = {},
     accessToken,
-    container,
+    customStylesheetUrl = false,
+    style = 'mapbox://styles/mapbox/streets-v11',
+    children,
+    onready,
+    ...rest
+  } = $props()
+
+  let mapbox = $state()
+
+
+  const optionsWithDefaults = {
+    accessToken,
     style,
     center,
     zoom,
@@ -62,21 +32,37 @@
     wheelZoomRate,
     version,
     customStylesheetUrl,
-    map
-  }, options)
+    map,
+    ...options
+  }
+
+  setContext(contextKey, {
+    getMap: () => map,
+    getMapbox: () => mapbox
+  })
 
   const queue = new EventQueue()
 
-  function init ({ detail }) {
-    map = detail.map
-    mapbox = detail.mapbox
+  function init (e) {
+    map = e.detail.map
+    mapbox = e.detail.mapbox
     queue.start(map)
-    dispatch('ready')
+    onready?.()
+
+    map.on('zoomend', (e) => {
+      zoom = map.getZoom()
+    })
   }
 
-  onDestroy(() => {
-    queue.stop()
-    map = undefined
+  $effect(() => {
+    return () => {
+      queue.stop()
+      map = undefined
+    }
+  })
+
+  $effect(() => {
+    zoom && setZoom(zoom)
   })
 
   export function fitBounds (bbox, data = {}) {
@@ -110,6 +96,22 @@
   export function getMapbox () {
     return mapbox
   }
-
-  $: zoom && setZoom(zoom)
 </script>
+
+<div
+  {@attach mapAttachment(optionsWithDefaults)}
+  onready={init}
+  {...rest}
+  role="presentation"
+>
+  {#if map}
+    {@render children?.()}
+  {/if}
+</div>
+
+<style>
+  div {
+    width: 100%;
+    height: 100%;
+  }
+</style>

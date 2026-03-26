@@ -2,16 +2,8 @@ name: publish
 
 on:
   push:
-    branches:
-      - '*'
     tags:
       - 'v*'
-  pull_request:
-    branches:
-      - '*'
-
-env:
-  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
 jobs:
   publish-npm:
@@ -24,7 +16,7 @@ jobs:
       - name: set up node and pnpm
         run: |
           corepack enable
-          pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+          pnpm config set '//registry.npmjs.org/:_authToken' "${{secrets.NPM_TOKEN}}"
           pnpm i
 
       - name: publish

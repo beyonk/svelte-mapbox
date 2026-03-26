@@ -1,56 +1,38 @@
-<div
-	bind:this={dispatcher}
-	on:error
-	on:geolocate
-	on:outofmaxbounds
-	on:trackuserlocationend
-	on:trackuserlocationstart
-/>
-
 <script>
-	import { getContext, onMount } from 'svelte'
-	import { contextKey } from '../../mapbox.js'
-	import { bindEvents } from '../../event-bindings.js'
+  import { getContext, onMount, untrack } from 'svelte'
+  import { contextKey } from '../../mapbox.js'
+  import { bindEvents } from '../../event-bindings.js'
 
-	const { getMap, getMapbox } = getContext(contextKey)
-	const map = getMap()
-	const mapbox = getMapbox()
+  const { getMap, getMapbox } = getContext(contextKey)
+  const map = getMap()
+  const mapbox = getMapbox()
 
-	export let position = 'top-left'
-	export let options = {}
+  let { position = 'top-left', options = {}, ...rest } = $props()
 
-	let dispatcher
+  let dispatcher = $state()
 
-	const handlers = {
-	  error: (el, ev) => {
-	    return [ 'error', ev ]
-	  },
-	  geolocate: (el, ev) => {
-	    return [ 'geolocate', ev ]
-	  },
-	  outofmaxbounds: (el, ev) => {
-	    return [ 'outofmaxbounds', ev ]
-	  },
-	  trackuserlocationend: (el, ev) => {
-	    return [ 'trackuserlocationend', ev ]
-	  },
-	  trackuserlocationstart: (el, ev) => {
-	    return [ 'trackuserlocationstart', ev ]
-	  }
-	}
+  const handlers = {
+    error: (el, ev) => [ 'error', ev ],
+    geolocate: (el, ev) => [ 'geolocate', ev ],
+    outofmaxbounds: (el, ev) => [ 'outofmaxbounds', ev ],
+    trackuserlocationend: (el, ev) => [ 'trackuserlocationend', ev ],
+    trackuserlocationstart: (el, ev) => [ 'trackuserlocationstart', ev ]
+  }
 
-	const geolocate = new mapbox.GeolocateControl(options)
-	map.addControl(geolocate, position)
+  const geolocate = new mapbox.GeolocateControl(untrack(() => options))
+  map.addControl(geolocate, untrack(() => position))
 
-	onMount(() => {
-	  return bindEvents(geolocate, handlers, mapbox, dispatcher)
-	})
+  onMount(() => {
+    return bindEvents(geolocate, handlers, mapbox, dispatcher)
+  })
 
-	export function trigger () {
-	  geolocate.trigger()
-	}
+  export function trigger () {
+    geolocate.trigger()
+  }
 </script>
 
+<div bind:this={dispatcher} {...rest}></div>
+
 <style>
-	div { display: none; }
+  div { display: none; }
 </style>

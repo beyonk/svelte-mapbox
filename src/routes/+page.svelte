@@ -1,3 +1,51 @@
+<script>
+  import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
+  import { Map, Geocoder, Marker, controls } from '$lib/components.js'
+  import Earthquakes from './_Earthquakes.svelte'
+
+  const { GeolocateControl, NavigationControl } = controls
+
+  let place = $state(null)
+  let page = $state('about')
+  let center = $state({ lat: 53.3358627, lng: -2.8572362 })
+  let marker = $derived(center)
+  let zoom = $state(11.15)
+  let mapComponent = $state()
+
+  function navigate (next) {
+    page = next
+  }
+
+  function placeChanged (e) {
+    const { result } = e.detail
+    mapComponent.setCenter(result.center, 14)
+    place = result
+  }
+
+  function randomLng () {
+    return 77 + (Math.random() - 0.5) * 30
+  }
+
+  function randomLat () {
+    return 13 + (Math.random() - 0.5) * 30
+  }
+
+  function flyToRandomPlace () {
+    mapComponent.flyTo({
+      center: [ randomLng(), randomLat() ],
+      essential: true
+    })
+  }
+
+  function recentre (e) {
+    center = e.detail.center
+  }
+
+  function drag (e) {
+    marker = e.detail.center
+  }
+</script>
+
 <header>
   <div class="container">
     <div class="row">
@@ -42,39 +90,32 @@
       <div class="row">
         <aside>
           <div class="menu-box">
-            <h4>Navigation</h4>  
+            <h4>Navigation</h4>
             <nav>
               <ul>
-                <li><a href="#geocoder" on:click={() => { navigate('geocoder') } } class:current={page === 'geocoder'}>Geocoder</a></li>
-                <li><a href="#map" on:click={() => { navigate('map') }} class:current={page === 'map'}>Map</a></li>
-              </ul>          
+                <li><a href="#geocoder" onclick={() => navigate('geocoder')} class:current={page === 'geocoder'}>Geocoder</a></li>
+                <li><a href="#map" onclick={() => navigate('map')} class:current={page === 'map'}>Map</a></li>
+              </ul>
             </nav>
           </div>
         </aside>
         <div class="content-info">
           <div class="action-buttons">
-            <button id="fly-to" on:click={flyToRandomPlace}
-              >Fly to random location</button
-            >
-      
-            <button
-              id="change-zoom"
-              on:click={() => (zoom = Math.floor(Math.random() * 10))}
-              >Change Zoom Level</button
-            >
-            </div>
+            <button id="fly-to" onclick={flyToRandomPlace}>Fly to random location</button>
+            <button id="change-zoom" onclick={() => (zoom = Math.floor(Math.random() * 10))}>Change Zoom Level</button>
+          </div>
 
           <div class="section-txt" id="geocoder">
             <form>
-            <Geocoder value="(Near London)" accessToken={PUBLIC_MAPBOX_TOKEN} on:result={placeChanged} on:clear={() => mapComponent.setCenter({ lng: 0, lat: 0 })} />
-            {#if place}
-              <dl>
-                <dt>Name:</dt>
-                <dd>{place.label}</dd>
-                <dt>Geolocation:</dt>
-                <dd>lat: {place.geometry.lat}, lng: {place.geometry.lng}</dd>
-              </dl>
-            {/if}
+              <Geocoder value="(Near London)" accessToken={PUBLIC_MAPBOX_TOKEN} onresult={placeChanged} onclear={() => mapComponent.setCenter({ lng: 0, lat: 0 })} />
+              {#if place}
+                <dl>
+                  <dt>Name:</dt>
+                  <dd>{place.place_name}</dd>
+                  <dt>Geolocation:</dt>
+                  <dd>lat: {place.geometry.coordinates[1]}, lng: {place.geometry.coordinates[0]}</dd>
+                </dl>
+              {/if}
             </form>
           </div>
           <div class="section-txt" id="map">
@@ -82,14 +123,14 @@
               <Map
                 bind:this={mapComponent}
                 accessToken={PUBLIC_MAPBOX_TOKEN}
-                on:recentre={recentre}
-                on:drag={drag}
+                onrecentre={recentre}
+                ondrag={drag}
                 {center}
                 bind:zoom
               >
                 <Earthquakes />
                 <NavigationControl />
-                <GeolocateControl on:geolocate={e => console.log('geolocated', e.detail)} />
+                <GeolocateControl ongeolocate={e => console.log('geolocated', e.detail)} />
                 <Marker lat={marker.lat} lng={marker.lng} />
               </Map>
             </div>
@@ -157,55 +198,4 @@
     color: #fff;
     background: #ee8a65;
   }
-
 </style>
-
-<script>
-  import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
-  import { Map, Geocoder, Marker, controls } from '$lib/components.js'
-  import Earthquakes from './_Earthquakes.svelte'
-
-  const { GeolocateControl, NavigationControl } = controls
-  const place = null
-
-  let page = 'about'
-  let center = { lat: 53.3358627, lng: -2.8572362 }
-  let marker = center
-  let zoom = 11.15
-  let mapComponent
-
-  function navigate (next) {
-    page = next
-  }
-
-  function placeChanged (e) {
-    const { result } = e.detail
-    mapComponent.setCenter(result.center, 14)
-  }
-  
-  function randomLng () {
-    return 77 + (Math.random() - 0.5) * 30
-  }
-
-  function randomLat () {
-    return 13 + (Math.random() - 0.5) * 30
-  }
-
-  function flyToRandomPlace () {
-    mapComponent.flyTo({
-      center: [
-        randomLng(),
-        randomLat()
-      ],
-      essential: true
-    })
-  }
-
-  function recentre ({ detail }) {
-    center = detail.center
-  }
-
-  function drag ({ detail }) {
-    marker = detail.center
-  }
-</script>

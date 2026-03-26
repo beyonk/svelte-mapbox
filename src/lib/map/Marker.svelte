@@ -10,36 +10,40 @@
     return Math.round(Math.random() * 255)
   }
 
+  let {
+    lat,
+    lng,
+    label = 'Marker',
+    popupClassName = 'beyonk-mapbox-popup',
+    markerOffset = [ 0, 0 ],
+    popupOffset = 10,
+    color = randomColour(),
+    popup = true,
+    popupOptions = {},
+    markerOptions = {},
+    children,
+    popupContent
+  } = $props()
+
+  let marker = $state()
+  let element = $state()
+  let elementPopup = $state()
+
   function move (lng, lat) {
     marker.setLngLat({ lng, lat })
   }
 
-  export let lat
-  export let lng
-  export let label = 'Marker'
-  export let popupClassName = 'beyonk-mapbox-popup'
-  export let markerOffset = [ 0, 0 ]
-  export let popupOffset = 10
-  export let color = randomColour()
-  export let popup = true
-  export let popupOptions = {}
-  export let markerOptions = {}
-
-  let marker
-  let element
-  let elementPopup
-
-  $: marker && move(lng, lat)
+  $effect(() => {
+    if (marker) move(lng, lat)
+  })
 
   onMount(() => {
     const namedParams = Object.assign(
-      {
-        offset: markerOffset
-      },
+      { offset: markerOffset },
       element.hasChildNodes() ? { element } : { color }
     )
     marker = new mapbox.Marker(Object.assign(namedParams, markerOptions))
-  
+
     if (popup) {
       const namedPopupParams = { offset: popupOffset, className: popupClassName }
       const popupEl = new mapbox.Popup(Object.assign(namedPopupParams, popupOptions))
@@ -48,7 +52,6 @@
       } else {
         popupEl.setText(label)
       }
-
       marker.setPopup(popupEl)
     }
 
@@ -67,9 +70,9 @@
 </script>
 
 <div bind:this={element}>
-<slot></slot>
+  {@render children?.()}
 </div>
 
 <div class='popup' bind:this={elementPopup}>
-  <slot name="popup"></slot>
+  {@render popupContent?.()}
 </div>
