@@ -33,12 +33,12 @@
     })
   }
 
-  function recentre (e) {
-    center = e.detail.center
+  function recentre (result) {
+    center = result.center
   }
 
-  function drag (e) {
-    marker = e.detail.center
+  function drag (result) {
+    marker = result.center
   }
 </script>
 
@@ -106,12 +106,14 @@
               <Geocoder
                 bind:value={placeName}
                 accessToken={PUBLIC_MAPBOX_TOKEN}
-                onresult={(e) => {
-                  const { result } = e.detail
+                onresult={({ result }) => {
+                  console.log('sets center', result.center)
                   mapComponent.setCenter(result.center, 14)
                   place = result
                 }}
-                onclear={() => mapComponent.setCenter({ lng: 0, lat: 0 })}
+                onclear={() => {
+                  mapComponent.setCenter({ lng: 0, lat: 0 })
+                }}
               />
               {#if place}
                 <dl>
@@ -135,7 +137,7 @@
               >
                 <Earthquakes />
                 <NavigationControl />
-                <GeolocateControl ongeolocate={e => console.log('geolocated', e.detail)} />
+                <GeolocateControl ongeolocate={({ result }) => console.log('geolocated', result)} />
                 <Marker lat={marker.lat} lng={marker.lng} />
               </Map>
             </div>

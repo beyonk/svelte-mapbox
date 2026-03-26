@@ -1,16 +1,34 @@
 import { load } from '../asset-loader.js'
-import { bindEvents } from '../event-bindings.js'
 
-export default function mapAttachment (options = {}) {
+export default function mapAttachment (options = {}, { ondragend, ondrag, onmoveend, onzoomstart, onzoom, onzoomend, onready }) {
   return (element) => {
-    console.log('attach', element, options)
     let map
 
     function init (options) {
       window.mapboxgl.accessToken = options.accessToken
       const el = new window.mapboxgl.Map(options)
 
-      return bindEvents(el, handlers, window.mapboxgl, element)
+      el.on('dragend', () => {
+        ondragend?.({ center: el.getCenter() })
+      })
+      el.on('drag', () => {
+        ondrag?.({ center: el.getCenter() })
+      })
+      el.on('moveend', () => {
+        onmoveend?.({ center: el.getCenter() })
+      })
+      el.on('zoomstart', () => {
+        onzoomstart?.({ zoom: el.getZoom() })
+      })
+      el.on('zoom', () => {
+        onzoom?.({ zoom: el.getZoom() })
+      })
+      el.on('zoomend', () => {
+        onzoomend?.({ zoom: el.getZoom() })
+      })
+      el.on('load', () => {
+        onready?.({ map: el, mapbox: window.mapboxgl })
+      })
     }
 
     const resources = [
@@ -34,32 +52,5 @@ export default function mapAttachment (options = {}) {
         map && map.remove && map.remove()
       }
     }
-  }
-}
-
-const handlers = {
-  dragend: el => {
-    return [ 'dragend', { center: el.getCenter() } ]
-  },
-  drag: el => {
-    return [ 'drag', { center: el.getCenter() } ]
-  },
-  moveend: el => {
-    return [ 'recentre', { center: el.getCenter() } ]
-  },
-  click: (el, { lngLat }) => {
-    return [ 'click', { lng: lngLat.lng, lat: lngLat.lat } ]
-  },
-  zoomstart: el => {
-    return [ 'zoomstart', { zoom: el.getZoom() } ]
-  },
-  zoom: el => {
-    return [ 'zoom', { zoom: el.getZoom() } ]
-  },
-  zoomend: el => {
-    return [ 'zoomend', { zoom: el.getZoom() } ]
-  },
-  load: (el, ev, mapbox) => {
-    return [ 'ready', { map: el, mapbox } ]
   }
 }

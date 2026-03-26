@@ -5,7 +5,6 @@
   import { EventQueue } from '../queue.svelte.js'
 
   let {
-    map = $bindable(null),
     version = 'v3.20.0',
     center = [ 0, 0 ],
     zoom = $bindable(9),
@@ -17,13 +16,24 @@
     style = 'mapbox://styles/mapbox/streets-v11',
     children,
     onready,
+    ondragend,
+    ondrag,
+    onmoveend,
+    onzoomstart,
+    onzoom,
+    onzoomend,
     ...rest
   } = $props()
 
+  let map = $state()
   let mapbox = $state()
 
+  setContext(contextKey, {
+    getMap: () => map,
+    getMapbox: () => mapbox
+  })
 
-  const optionsWithDefaults = {
+  const optionsWithDefaults = $derived.by(() => Object.assign({
     accessToken,
     style,
     center,
@@ -32,26 +42,21 @@
     wheelZoomRate,
     version,
     customStylesheetUrl,
-    map,
     ...options
-  }
-
-  setContext(contextKey, {
-    getMap: () => map,
-    getMapbox: () => mapbox
-  })
+  }))
 
   const queue = new EventQueue()
 
-  function init (e) {
-    map = e.detail.map
-    mapbox = e.detail.mapbox
+  function init (detail) {
+    map = detail.map
+    mapbox = detail.mapbox
     queue.start(map)
-    onready?.()
 
     map.on('zoomend', (e) => {
       zoom = map.getZoom()
     })
+
+    onready?.({ map, mapbox })
   }
 
   $effect(() => {
@@ -99,8 +104,10 @@
 </script>
 
 <div
-  {@attach mapAttachment(optionsWithDefaults)}
-  onready={init}
+  {@attach mapAttachment(
+      optionsWithDefaults,
+      { onready: init, ondragend, ondrag, onmoveend, onzoomstart, onzoom, onzoomend }
+    )}
   {...rest}
   role="presentation"
 >

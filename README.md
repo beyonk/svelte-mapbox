@@ -30,17 +30,17 @@ npm install --save-dev @beyonk/svelte-mapbox
 
 The container component is the map, and there are a variety of components which go on the map.
 
-```jsx
+```svelte
 <Map
   accessToken="<your api key>" // add your api key here
   bind:this={mapComponent} // Get reference to your map component to use methods
-  on:recentre={e => console.log(e.detail.center.lat, e.detail.center.lng) } // recentre events
+  onrecentre={e => console.log(e.detail.center.lat, e.detail.center.lng) } // recentre events
   options={{ scrollZoom: false }} // // add arbitrary options to the map from the mapbox api
 >
   <Earthquakes /> // Any custom component you create or want here - see marker example
   <Marker lat={someLat} lng={someLng} color="rgb(255,255,255)" label="some marker label" popupClassName="class-name" /> // built in Marker component
   <NavigationControl />
-  <GeolocateControl options={{ some: 'control-option' }} on:eventname={eventHandler} />
+  <GeolocateControl options={{ some: 'control-option' }} oneventname={eventHandler} />
   <ScaleControl />
 </Map>
 
@@ -73,13 +73,13 @@ The container component is the map, and there are a variety of components which 
 
 By default, markers are typical map pins to which you can pass a color property.
 
-```jsx
+```svelte
 <Marker color={brandColour} />
 ```
 
 You may also create a custom pin with the default slot.
 
-```jsx
+```svelte
 <Marker
 lat={waypoint.geo.lat}
 lng={waypoint.geo.lng}
@@ -98,13 +98,13 @@ lng={waypoint.geo.lng}
 ### Marker Popups
 By default a popup is revealed when you click a pin.  It is populated with text provided in the label property.
 
-```jsx
+```svelte
 <Marker label={markerText} />
 ```
 
 To indicate interactivity, you may target the marker with some custom CSS:
 
-```jsx
+```svelte
 <style>
     :global(.mapboxgl-marker){
       cursor: pointer;
@@ -114,13 +114,13 @@ To indicate interactivity, you may target the marker with some custom CSS:
 
 Optionally, disable the popup with the `popup={false}` property:
 
-```jsx
+```svelte
 <Marker popup={false} />
 ```
 
 You may alternatively pass a custom DOM element to the marker to use as a popup. 
 
-```jsx
+```svelte
 <Marker lat={pin.coordinates.latitude} lng={pin.coordinates.longitude}>
     <div class="content" slot="popup">
       <h3>{pin.name}</h3>
@@ -139,7 +139,7 @@ This also means that if you bind these properties to a variable, that variable w
 
 This is often easier than waiting for events such as `recentre` or `zoom` to be fired, to update markers and similar:
 
-```jsx
+```svelte
 <Map accessToken="<your api key>" bind:center bind:zoom>
   <Marker bind:lat bind:lng />
 </Map>
@@ -165,19 +165,19 @@ map is ready in your browser when you call it this way.
 
 The Geocoder is an autocompleting place lookup, which returns a lat and lng for a place.
 
-```jsx
-<Geocoder accessToken="<your api key>" on:result={somePlaceChangeFunction} />
+```svelte
+<Geocoder accessToken="<your api key>" onresult={somePlaceChangeFunction} />
 
 <script>
   import { Geocoder } from '@beyonk/svelte-mapbox'
 </script>
 ```
 
-The geocoder has five events you can subscribe to: `on:loading`, `on:result`, `on:results`, `on:clear`, and `on:error` which are [documented here](https://github.com/mapbox/mapbox-gl-geocoder/blob/master/API.md#on)
+The geocoder has five events you can subscribe to: `onloading`, `onresult`, `onresults`, `onclear`, and `onerror` which are [documented here](https://github.com/mapbox/mapbox-gl-geocoder/blob/master/API.md#on)
 
-The most important event is `on:result` which is fired when a user selects an autocomplete result.
+The most important event is `onresult` which is fired when a user selects an autocomplete result.
 
-There is a sixth event specific to this library, which is `on:ready`, which is fired when the component is ready for use. You can likely ignore it.
+There is a sixth event specific to this library, which is `onready`, which is fired when the component is ready for use. You can likely ignore it.
 
 ## Custom CSS
 

@@ -1,10 +1,8 @@
 import { load } from '../asset-loader.js'
-import { bindEvents } from '../event-bindings.js'
 
-export default function geocoderAttachment (options) {
+export default function geocoderAttachment (options, { onresults, onresult, onloading, onerror, onclear, onready }) {
   return (element) => {
     let geocoderInstance
-    let unbind = () => {}
 
     const resources = [
       { type: 'script', value: `//api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/${options.version}/mapbox-gl-geocoder.min.js`, id: 'byk-gc-js' }
@@ -23,33 +21,30 @@ export default function geocoderAttachment (options) {
       if (options.value) {
         geocoderInstance.setInput(options.value)
       }
-      unbind = bindEvents(geocoderInstance, handlers, false, element)
+
+      geocoderInstance.on('results', (ev) => {
+        onresults?.(ev)
+      })
+      geocoderInstance.on('result', (ev) => {
+        console.log('result', onresult, ev)
+        onresult?.(ev)
+      })
+      geocoderInstance.on('loading', (ev) => {
+        onloading?.(ev)
+      })
+      geocoderInstance.on('error', (ev) => {
+        onerror?.(ev)
+      })
+      geocoderInstance.on('clear', (ev) => {
+        onclear?.(ev)
+      })
+      geocoderInstance.on('load', (ev) => {
+        onready?.({ ...ev, geocoder: geocoderInstance })
+      })
     })
 
     return () => {
-      unbind()
       geocoderInstance && geocoderInstance.remove && geocoderInstance.remove()
     }
-  }
-}
-
-const handlers = {
-  results: (el, ev) => {
-    return [ 'results', ev ]
-  },
-  result: (el, ev) => {
-    return [ 'result', ev ]
-  },
-  loading: (el, ev) => {
-    return [ 'loading', ev ]
-  },
-  error: (el, ev) => {
-    return [ 'error', ev ]
-  },
-  clear: (el, ev) => {
-    return [ 'clear', ev ]
-  },
-  load: el => {
-    return [ 'ready', { geocoder: el } ]
   }
 }

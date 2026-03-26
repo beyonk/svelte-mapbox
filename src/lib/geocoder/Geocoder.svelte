@@ -10,6 +10,12 @@
     value = null,
     customStylesheetUrl = false,
     geocoder = $bindable(),
+    onresults,
+    onresult,
+    onloading,
+    onerror,
+    onclear,
+    onload,
     ...rest
   } = $props()
 
@@ -24,15 +30,14 @@
     value
   }, options))
 
-  function init (e) {
-    geocoder = e.detail.geocoder
-    onready?.()
+  function init (detail) {
+    geocoder = detail.geocoder
   }
 </script>
 
 <div
   id={fieldId}
-  {@attach geocoderAttachment(optionsWithDefaults)}
+  {@attach geocoderAttachment(optionsWithDefaults, { onresults, onresult, onloading, onerror, onclear, onload })}
   onready={init}
   {...rest}
 ></div>
