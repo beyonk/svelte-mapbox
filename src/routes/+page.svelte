@@ -2,10 +2,12 @@
   import { PUBLIC_MAPBOX_TOKEN } from '$env/static/public'
   import { Map, Geocoder, Marker, controls } from '$lib/components.js'
   import Earthquakes from './_Earthquakes.svelte'
+  import { untrack } from 'svelte'
 
   const { GeolocateControl, NavigationControl } = controls
 
-  let place = $state(null)
+  let place = $state()
+  let placeName = $derived(untrack(() => place?.place_name || '(Near London)'))
   let page = $state('about')
   let center = $state({ lat: 53.3358627, lng: -2.8572362 })
   let marker = $derived(center)
@@ -14,12 +16,6 @@
 
   function navigate (next) {
     page = next
-  }
-
-  function placeChanged (e) {
-    const { result } = e.detail
-    mapComponent.setCenter(result.center, 14)
-    place = result
   }
 
   function randomLng () {
@@ -79,7 +75,7 @@
         </div>
       </div>
       <div class="col-lg-2 col-md-3 col-xs-12 right">
-        <a class="btn" href="http://www.github.com/beyonk-adventures/svelte-mapbox">Github</a>
+        <a class="btn" href="http://www.github.com/beyonk/svelte-mapbox">Github</a>
       </div>
     </div>
   </div>
@@ -107,7 +103,16 @@
 
           <div class="section-txt" id="geocoder">
             <form>
-              <Geocoder value="(Near London)" accessToken={PUBLIC_MAPBOX_TOKEN} onresult={placeChanged} onclear={() => mapComponent.setCenter({ lng: 0, lat: 0 })} />
+              <Geocoder
+                bind:value={placeName}
+                accessToken={PUBLIC_MAPBOX_TOKEN}
+                onresult={(e) => {
+                  const { result } = e.detail
+                  mapComponent.setCenter(result.center, 14)
+                  place = result
+                }}
+                onclear={() => mapComponent.setCenter({ lng: 0, lat: 0 })}
+              />
               {#if place}
                 <dl>
                   <dt>Name:</dt>
@@ -158,7 +163,7 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-12 center">
-        © 2019 Beyonk. All rights reserved.
+        © 2026 Beyonk. All rights reserved.
       </div>
     </div>
   </div>
