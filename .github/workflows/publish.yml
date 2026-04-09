@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: set up node and pnpm
         run: |
           corepack enable
-          pnpm config set '//registry.npmjs.org/:_authToken' "${{secrets.NPM_TOKEN}}"
+          pnpm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          pnpm config set '//npm.pkg.github.com/:_authToken' "${{ secrets.GITHUB_TOKEN }}"
           pnpm i
 
       - name: publish
-        run: pnpm publish --no-git-checks --access public
+        run: |
+          pnpm publish --registry https://npm.pkg.github.com --no-git-checks
+          pnpm publish --registry https://registry.npmjs.org --no-git-checks --access public
