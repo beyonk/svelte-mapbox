@@ -15,12 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
+<<<<<<< HEAD
         uses: actions/checkout@v6
+=======
+        uses: actions/checkout@v5
+>>>>>>> a10e20c (chore: update publish workflows to use pnpm@10.33.0 with GitHub Packages and Node 24.14.1)
 
       - name: set up node and pnpm
         run: |
           corepack enable
+<<<<<<< HEAD
+=======
+          pnpm config set '//registry.npmjs.org/:_authToken' "${{ secrets.NPM_TOKEN }}"
+          pnpm config set '//npm.pkg.github.com/:_authToken' "${{ secrets.GITHUB_TOKEN }}"
+>>>>>>> a10e20c (chore: update publish workflows to use pnpm@10.33.0 with GitHub Packages and Node 24.14.1)
           pnpm i
 
       - name: publish
-        run: pnpm publish --no-git-checks --access public
+        run: |
+          pnpm publish --registry https://npm.pkg.github.com --no-git-checks
+          pnpm publish --registry https://registry.npmjs.org --no-git-checks --access public
