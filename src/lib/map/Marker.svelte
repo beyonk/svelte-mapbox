@@ -3,8 +3,6 @@
   import { contextKey } from '../mapbox.js'
 
   const { getMap, getMapbox } = getContext(contextKey)
-  const map = getMap()
-  const mapbox = getMapbox()
 
   function randomColour () {
     return Math.round(Math.random() * 255)
@@ -38,9 +36,12 @@
   })
 
   onMount(() => {
+    const map = getMap()
+    const mapbox = getMapbox()
+
     const namedParams = Object.assign(
       { offset: markerOffset },
-      element.hasChildNodes() ? { element } : { color }
+      element.children.length > 0 || element.textContent.trim().length > 0 ? { element } : { color }
     )
     marker = new mapbox.Marker(Object.assign(namedParams, markerOptions))
 
