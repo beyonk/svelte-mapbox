@@ -37,7 +37,7 @@
     accessToken,
     style,
     center,
-    zoom,
+    zoom: untrack(() => zoom),
     zoomRate,
     wheelZoomRate,
     version,

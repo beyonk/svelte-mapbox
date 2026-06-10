@@ -41,7 +41,7 @@
 
     const namedParams = Object.assign(
       { offset: markerOffset },
-      element.hasChildNodes() ? { element } : { color }
+      element.children.length > 0 ? { element } : { color }
     )
     marker = new mapbox.Marker(Object.assign(namedParams, markerOptions))
 
