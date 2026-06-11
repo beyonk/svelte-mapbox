@@ -28,5 +28,12 @@
   },
   "types": "./components.d.ts",
   "type": "module",
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@11.5.3",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": ">=25.0.0",
+      "onFail": "download"
+    }
+  }
 }
