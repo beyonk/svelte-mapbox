@@ -3,6 +3,7 @@ import { load } from '../asset-loader.js'
 export default function geocoderAttachment (options, { onresults, onresult, onloading, onerror, onclear, onready, onchange }) {
   return (element) => {
     let geocoderInstance
+    let inputElement
     let handleChange
 
     const resources = [
@@ -42,17 +43,16 @@ export default function geocoderAttachment (options, { onresults, onresult, onlo
         onready?.({ ...ev, geocoder: geocoderInstance })
       })
 
+      inputElement = element.querySelector('input')
       handleChange = (ev) => {
-        if (ev.target.tagName === 'INPUT') {
-          onchange?.({ query: ev.target.value })
-        }
+        onchange({ query: ev.target.value })
       }
-      element.addEventListener('change', handleChange)
+      inputElement.addEventListener('change', handleChange)
     })
 
     return () => {
-      if (handleChange) {
-        element.removeEventListener('change', handleChange)
+      if (inputElement && handleChange) {
+        inputElement.removeEventListener('change', handleChange)
       }
       geocoderInstance && geocoderInstance.remove && geocoderInstance.remove()
     }
