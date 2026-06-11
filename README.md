@@ -173,7 +173,7 @@ The Geocoder is an autocompleting place lookup, which returns a lat and lng for 
 </script>
 ```
 
-The geocoder has five events you can subscribe to: `onloading`, `onresult`, `onresults`, `onclear`, and `onerror` which are [documented here](https://github.com/mapbox/mapbox-gl-geocoder/blob/master/API.md#on)
+The geocoder has six events you can subscribe to: `onloading`, `onresult`, `onresults`, `onclear`, `onerror`, and `oninput` which are [documented here](https://github.com/mapbox/mapbox-gl-geocoder/blob/master/API.md#on)
 
 The most important event is `onresult` which is fired when a user selects an autocomplete result.
 
