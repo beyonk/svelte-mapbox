@@ -16,6 +16,7 @@
     onerror,
     onclear,
     onload,
+    oninput,
     ...rest
   } = $props()
 
@@ -37,7 +38,7 @@
 
 <div
   id={fieldId}
-  {@attach geocoderAttachment(optionsWithDefaults, { onresults, onresult, onloading, onerror, onclear, onload })}
+  {@attach geocoderAttachment(optionsWithDefaults, { onresults, onresult, onloading, onerror, onclear, onload, oninput })}
   onready={init}
   {...rest}
 ></div>
