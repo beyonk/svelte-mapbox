@@ -4,7 +4,11 @@ function load (assets, cb) {
 
     if (existing) {
       if (type === 'script') {
-        cb()
+        if (window.mapboxgl) {
+          cb()
+        } else {
+          existing.addEventListener('load', () => cb(), { once: true })
+        }
       }
       return
     }
