@@ -8,17 +8,17 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@beyonk/eslint-config": "^8.0.2",
+    "@beyonk/eslint-config": "^9.1.4",
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.14.0",
-    "@sveltejs/kit": "^2.55.0",
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@sveltejs/kit": "^2.64.0",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "eslint": "^9.14.0",
     "eslint-plugin-svelte": "^2.46.0",
-    "svelte": "^5.55.0",
-    "svelte2tsx": "^0.7.23",
-    "typescript": "^5.6.3",
-    "vite": "^8.0.2"
+    "svelte": "^5.56.3",
+    "svelte2tsx": "^0.7.56",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
   },
   "peerDependencies": {
     "svelte": ">=4.0.0"
