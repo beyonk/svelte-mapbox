@@ -1,9 +1,9 @@
 import { load } from '../asset-loader.js'
 
-export default function geocoderAttachment (options, { onresults, onresult, onloading, onerror, onclear, onready, oninput }) {
+export default function geocoderAttachment (options, { onresults, onresult, onloading, onerror, onclear, onready, onchange }) {
   return (element) => {
     let geocoderInstance
-    let handleInput
+    let handleChange
 
     const resources = [
       { type: 'script', value: `//api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/${options.version}/mapbox-gl-geocoder.min.js`, id: 'byk-gc-js' }
@@ -42,17 +42,17 @@ export default function geocoderAttachment (options, { onresults, onresult, onlo
         onready?.({ ...ev, geocoder: geocoderInstance })
       })
 
-      handleInput = (ev) => {
+      handleChange = (ev) => {
         if (ev.target.tagName === 'INPUT') {
-          oninput?.({ query: ev.target.value })
+          onchange?.({ query: ev.target.value })
         }
       }
-      element.addEventListener('input', handleInput)
+      element.addEventListener('change', handleChange)
     })
 
     return () => {
-      if (handleInput) {
-        element.removeEventListener('input', handleInput)
+      if (handleChange) {
+        element.removeEventListener('change', handleChange)
       }
       geocoderInstance && geocoderInstance.remove && geocoderInstance.remove()
     }

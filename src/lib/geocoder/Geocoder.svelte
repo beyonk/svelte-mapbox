@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte'
   import geocoderAttachment from './geocoder-attachment.js'
 
   let {
@@ -7,7 +8,7 @@
     version = 'v5.1.0',
     types = [ 'country', 'region', 'postcode', 'district', 'place', 'locality', 'neighborhood', 'address' ],
     placeholder = 'Search',
-    value = null,
+    value = $bindable(null),
     customStylesheetUrl = false,
     geocoder = $bindable(),
     onresults,
@@ -16,7 +17,7 @@
     onerror,
     onclear,
     onload,
-    oninput,
+    onchange,
     ...rest
   } = $props()
 
@@ -28,17 +29,22 @@
     types: types.join(','),
     placeholder,
     customStylesheetUrl,
-    value
+    value: untrack(() => value)
   }, options))
 
   function init (detail) {
     geocoder = detail.geocoder
   }
+
+  function updateValue (detail) {
+    value = detail.query
+    onchange?.(detail)
+  }
 </script>
 
 <div
   id={fieldId}
-  {@attach geocoderAttachment(optionsWithDefaults, { onresults, onresult, onloading, onerror, onclear, onload, oninput })}
+  {@attach geocoderAttachment(optionsWithDefaults, { onresults, onresult, onloading, onerror, onclear, onload, onchange: updateValue })}
   onready={init}
   {...rest}
 ></div>
