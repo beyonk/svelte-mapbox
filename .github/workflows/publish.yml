@@ -21,6 +21,8 @@ jobs:
         run: |
           corepack enable
           pnpm i
+          pnpm up -g npm@latest
+          pnpm exec npm -v
 
       - name: publish
         run: pnpm publish --no-git-checks --access public
