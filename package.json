@@ -26,6 +26,10 @@
   "exports": {
     ".": "./src/lib/components.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/beyonk/svelte-mapbox.git"
+  },
   "types": "./components.d.ts",
   "type": "module",
   "packageManager": "pnpm@11.5.3",
