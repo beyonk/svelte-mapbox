@@ -51,7 +51,7 @@ export default function geocoderAttachment (options, { onresults, onresult, onlo
     })
 
     return () => {
-      if (inputElement && handleChange) {
+      if (inputElement) {
         inputElement.removeEventListener('change', handleChange)
       }
       geocoderInstance && geocoderInstance.remove && geocoderInstance.remove()
