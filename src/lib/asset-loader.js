@@ -4,7 +4,7 @@ function load (assets, cb) {
 
     if (existing) {
       if (type === 'script') {
-        if (window.mapboxgl) {
+        if (existing.dataset.loaded) {
           cb()
         } else {
           existing.addEventListener('load', () => cb(), { once: true })
@@ -19,7 +19,10 @@ function load (assets, cb) {
       tag.async = true
       tag.defer = true
       tag.src = value
-      tag.onload = () => cb()
+      tag.onload = () => {
+        tag.dataset.loaded = 'true'
+        cb()
+      }
     } else {
       tag.rel = 'stylesheet'
       tag.href = value
