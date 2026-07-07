@@ -39,5 +39,8 @@
       "version": ">=25.0.0",
       "onFail": "download"
     }
+  },
+  "engines": {
+    "node": "24.14.1"
   }
 }
