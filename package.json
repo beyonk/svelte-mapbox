@@ -32,7 +32,7 @@
   },
   "types": "./components.d.ts",
   "type": "module",
-  "packageManager": "pnpm@11.5.3",
+  "packageManager": "pnpm@11.10.0",
   "devEngines": {
     "runtime": {
       "name": "node",
@@ -41,6 +41,6 @@
     }
   },
   "engines": {
-    "node": "24.14.1"
+    "node": ">=25.0.0"
   }
 }
