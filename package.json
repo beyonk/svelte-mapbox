@@ -18,7 +18,7 @@
     "svelte": "^5.56.3",
     "svelte2tsx": "^0.7.56",
     "typescript": "^6.0.3",
-    "vite": "^8.0.16"
+    "vite": "^8.1.6"
   },
   "peerDependencies": {
     "svelte": ">=4.0.0"
